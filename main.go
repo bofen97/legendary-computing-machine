@@ -2,11 +2,10 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"net/http"
-	"strings"
+	"regexp"
 
 	"golang.org/x/text/transform"
 
@@ -55,17 +54,13 @@ func main() {
 		fmt.Printf("%v", err)
 		return
 	}
+	//
+	headerRe := regexp.MustCompile(`<a href="(.*?)">(.*?)</a>.*?</div>`)
 
-	numlinks := strings.Count(string(body), "<a")
-	fmt.Println("numlinks : ", numlinks)
+	matches := headerRe.FindAllSubmatch(body, -1)
+	for _, m := range matches {
+		fmt.Println("news link :", string(m[1]))
+		fmt.Println("news title :", string(m[2]))
 
-	exits := strings.Contains(string(body), "黄金")
-	fmt.Println("has 黄金？ : ", exits)
-
-	numlinks = bytes.Count(body, []byte("<a"))
-	fmt.Println("numlinks (bytes): ", numlinks)
-
-	exits = bytes.Contains(body, []byte("黄金"))
-	fmt.Println("has 黄金？ (byte) : ", exits)
-
+	}
 }
